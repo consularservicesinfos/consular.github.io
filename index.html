@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consular Services - Connexion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #173887 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+        }
+
+        .logo-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 50px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex: 1;
+        }
+
+        .form-section {
+            padding: 50px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex: 1.2;
+        }
+
+        .logo {
+            max-width: 200px;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            color: #173887;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #173887;
+            box-shadow: 0 0 0 0.2rem rgba(23, 56, 135, 0.25);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #173887;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #03143d;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #03143d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #173887;
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #dc3545;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #f5c6cb;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 500;
+            display: none;
+        }
+
+        .streamlit-frame {
+            width: 100%;
+            height: 100vh;
+            border: none;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+            }
+            
+            .logo-section {
+                padding: 30px 20px;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Page de connexion -->
+    <div class="login-container" id="loginPage">
+        <div class="logo-section">
+            <img src="Logo.png" alt="Logo Consular Services" class="logo" onerror="this.style.display='none'">
+            <h1 class="title">Consular Services</h1>
+            <p class="subtitle">Plateforme d'envoi d'emails</p>
+        </div>
+        
+        <div class="form-section">
+            <h2 style="color: #173887; font-weight: 600; margin-bottom: 30px; text-align: center;">
+                Connexion
+            </h2>
+            
+            <div class="error-message" id="errorMessage">
+                Identifiants incorrects. Utilisez Admin/Admin
+            </div>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <input type="text" id="username" placeholder="Entrez votre nom d'utilisateur" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" id="password" placeholder="Entrez votre mot de passe" required>
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" class="btn btn-secondary" onclick="resetForm()">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Se connecter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Frame pour l'application Streamlit (caché au début) -->
+    <iframe id="streamlitApp" class="streamlit-frame" src=""></iframe>
+
+    <script>
+        // Gestion du formulaire de connexion
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Vérification des identifiants
+            if (username === 'Admin' && password === 'Admin') {
+                // Cache la page de connexion et affiche l'app Streamlit
+                document.getElementById('loginPage').style.display = 'none';
+                const streamlitFrame = document.getElementById('streamlitApp');
+                streamlitFrame.style.display = 'block';
+                
+                // Remplace cette URL par l'URL de ton app Streamlit déployée
+                streamlitFrame.src = 'https://ton-app-streamlit.streamlit.app/';
+            } else {
+                // Affiche le message d'erreur
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        // Fonction pour réinitialiser le formulaire
+        function resetForm() {
+            document.getElementById('loginForm').reset();
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Gestion des erreurs de chargement du logo
+        window.addEventListener('load', function() {
+            const logo = document.querySelector('.logo');
+            if (!logo.complete || logo.naturalHeight === 0) {
+                const logoSection = document.querySelector('.logo-section');
+                const emoji = document.createElement('div');
+                emoji.style.fontSize = '80px';
+                emoji.style.color = '#173887';
+                emoji.style.marginBottom = '20px';
+                emoji.textContent = '🔐';
+                logoSection.insertBefore(emoji, logoSection.firstChild);
+            }
+        });
+    </script>
+</body>
+</html>
