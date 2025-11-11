@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Consular Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .header .subject {
+            font-size: 18px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 16px;
+            margin-bottom: 25px;
+            color: #555;
+        }
+        
+        .message-content {
+            font-size: 15px;
+            line-height: 1.7;
+            color: #444;
+            margin-bottom: 30px;
+        }
+        
+        .message-content p {
+            margin-bottom: 15px;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 14px 35px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            font-size: 15px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(30, 60, 114, 0.3);
+        }
+        
+        .signature {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .signature p {
+            margin-bottom: 8px;
+            color: #555;
+        }
+        
+        .sender-name {
+            font-weight: 600;
+            color: #1e3c72 !important;
+            font-size: 16px;
+        }
+        
+        .footer {
+            background: #f8f9fa;
+            padding: 25px 30px;
+            text-align: center;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        .contact-info {
+            margin: 15px 0;
+            line-height: 1.5;
+        }
+        
+        .unsubscribe {
+            margin-top: 15px;
+            font-size: 12px;
+        }
+        
+        .unsubscribe a {
+            color: #666;
+            text-decoration: none;
+        }
+        
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #1e3c72;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .info-box h3 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 30px 20px;
+            }
+            
+            .header {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="header">
+            <h1>{{company_name}}</h1>
+            <div class="subject">{{email_subject}}</div>
+        </div>
+        
+        <div class="content">
+            <div class="greeting">
+                <strong>Bonjour {{recipient_name}},</strong>
+            </div>
+            
+            <div class="message-content">
+                {{message_content|safe}}
+            </div>
+            
+            {% if additional_info %}
+            <div class="info-box">
+                <h3>ℹ️ Informations importantes</h3>
+                {{additional_info|safe}}
+            </div>
+            {% endif %}
+            
+            {% if call_to_action_url and call_to_action_text %}
+            <div class="button-container">
+                <a href="{{call_to_action_url}}" class="cta-button">
+                    {{call_to_action_text}}
+                </a>
+            </div>
+            {% endif %}
+            
+            <div class="signature">
+                <p class="sender-name">{{sender_name}}</p>
+                <p><strong>{{company_name}}</strong></p>
+                <p>📧 {{contact_email}}</p>
+                <p>📞 {{contact_phone}}</p>
+                {% if department %}
+                <p>🏢 {{department}}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="contact-info">
+                <strong>{{company_name}}</strong><br>
+                {{company_address}}
+            </div>
+            
+            <div class="unsubscribe">
+                <a href="{{unsubscribe_url}}">Se désabonner de ces emails</a>
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 12px; color: #999;">
+                &copy; 2024 {{company_name}}. Tous droits réservés.
+            </div>
+        </div>
+    </div>
+</body>
+</html>
