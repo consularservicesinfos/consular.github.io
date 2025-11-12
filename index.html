@@ -6,7 +6,6 @@
     <title>Consular Services - Envoi d'Emails</title>
     <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <style>
-        /* VOTRE CSS EXISTANT - JE GARDE LE MÊME */
         :root {
             --primary-color: #173887;
             --secondary-color: #2a5298;
@@ -58,7 +57,9 @@
         
         .logo {
             max-width: 200px;
+            max-height: 120px;
             margin-bottom: 20px;
+            object-fit: contain;
         }
         
         .title {
@@ -125,6 +126,15 @@
         
         .btn-secondary:hover {
             background-color: #173887;
+        }
+        
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #218838;
         }
         
         .error-message {
@@ -265,6 +275,14 @@
             border: 1px solid #b3d9f5;
         }
         
+        .history-item {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+        }
+        
         @media (max-width: 768px) {
             .login-container,
             .app-content {
@@ -283,7 +301,9 @@
     <!-- PAGE DE CONNEXION -->
     <div class="login-container" id="loginPage">
         <div class="logo-section">
-            <div style="font-size: 80px; color: #173887; margin-bottom: 20px;">📧</div>
+            <!-- LOGO AJOUTÉ ICI -->
+            <img src="Logo.png" alt="Consular Services Logo" class="logo" onerror="this.style.display='none'; document.getElementById('emojiLogo').style.display='block';">
+            <div id="emojiLogo" style="font-size: 80px; color: #173887; margin-bottom: 20px; display: none;">📧</div>
             <h1 class="title">Consular Services</h1>
             <p>Plateforme d'envoi d'emails</p>
         </div>
@@ -319,7 +339,11 @@
     <!-- APPLICATION PRINCIPALE -->
     <div class="app-container" id="appContainer">
         <div class="main-header">
-            <span>Consular Services - Envoi d'Emails</span>
+            <!-- LOGO DANS L'HEADER -->
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="Logo.png" alt="Logo" style="height: 40px;">
+                <span>Consular Services - Envoi d'Emails</span>
+            </div>
             <button class="btn btn-secondary" onclick="logout()">Déconnexion</button>
         </div>
         
@@ -366,6 +390,9 @@
                     </div>
                     <button class="btn btn-primary" onclick="initEmailJS()" style="width: 100%;">
                         Sauvegarder la configuration
+                    </button>
+                    <button class="btn btn-success" onclick="testEmailJS()" style="width: 100%; margin-top: 10px;">
+                        🔧 Tester la configuration
                     </button>
                 </div>
             </div>
@@ -438,6 +465,10 @@
     </div>
 
     <script>
+        // =============================================
+        // FONCTIONS EMAILJS
+        // =============================================
+
         // Initialisation EmailJS
         function initEmailJS() {
             const serviceId = document.getElementById('serviceId').value;
@@ -462,6 +493,52 @@
             showAlert('success', 'Configuration EmailJS sauvegardée avec succès!');
         }
 
+        // Test de la configuration EmailJS
+        async function testEmailJS() {
+            const savedConfig = localStorage.getItem('emailjs_config');
+            if (!savedConfig) {
+                showAlert('error', '❌ Aucune configuration EmailJS trouvée. Veuillez d\'abord sauvegarder la configuration.');
+                return;
+            }
+            
+            const config = JSON.parse(savedConfig);
+            console.log('Configuration EmailJS:', config);
+            
+            // Demander l'email de test
+            const testEmail = prompt('Entrez votre email pour le test:', 'votre-email@test.com');
+            if (!testEmail) return;
+            
+            showAlert('success', 'Test en cours...');
+            
+            // Données de test
+            const testParams = {
+                to_email: testEmail,
+                recipient_name: 'Utilisateur Test',
+                subject: 'TEST - Configuration EmailJS',
+                message: 'Félicitations ! Votre configuration EmailJS fonctionne correctement. Vous pouvez maintenant envoyer des emails depuis votre application.',
+                additional_info: 'Ceci est un email de test pour vérifier la configuration.',
+                company: document.getElementById('defaultCompany').value,
+                sender: document.getElementById('defaultSender').value,
+                contact_email: document.getElementById('defaultEmail').value,
+                phone: document.getElementById('defaultPhone').value
+            };
+            
+            console.log('Paramètres de test:', testParams);
+            
+            try {
+                const response = await emailjs.send(config.serviceId, config.templateId, testParams);
+                console.log('✅ SUCCÈS:', response);
+                showAlert('success', '✅ Email de test envoyé avec succès ! Vérifiez votre boîte email.');
+            } catch (error) {
+                console.error('❌ ERREUR DÉTAILLÉE:', error);
+                let errorMsg = 'Erreur lors du test: ';
+                if (error.text) errorMsg += error.text;
+                else if (error.message) errorMsg += error.message;
+                else errorMsg += JSON.stringify(error);
+                showAlert('error', errorMsg);
+            }
+        }
+
         // Charger la configuration au démarrage
         function loadEmailJSConfig() {
             const savedConfig = localStorage.getItem('emailjs_config');
@@ -476,7 +553,10 @@
             }
         }
 
-        // GESTION DE LA CONNEXION
+        // =============================================
+        // FONCTIONS DE GESTION DE LA CONNEXION
+        // =============================================
+
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const username = document.getElementById('username').value;
@@ -486,6 +566,7 @@
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
                 loadEmailJSConfig();
+                loadHistory();
             } else {
                 document.getElementById('errorMessage').style.display = 'block';
             }
@@ -502,7 +583,10 @@
             resetForm();
         }
 
-        // GESTION DES ONGLETS
+        // =============================================
+        // FONCTIONS DE GESTION DES ONGLETS
+        // =============================================
+
         function showTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -517,7 +601,10 @@
             }
         }
 
-        // ENVOI D'EMAIL AVEC EMAILJS
+        // =============================================
+        // FONCTIONS D'ENVOI D'EMAILS
+        // =============================================
+
         async function sendEmail() {
             const toEmail = document.getElementById('toEmail').value;
             const recipientName = document.getElementById('recipientName').value;
@@ -526,7 +613,14 @@
             
             // Validation
             if (!toEmail || !recipientName || !subject || !messageContent) {
-                showAlert('error', 'Veuillez remplir tous les champs obligatoires');
+                showAlert('error', 'Veuillez remplir tous les champs obligatoires (*)');
+                return;
+            }
+
+            // Validation email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(toEmail)) {
+                showAlert('error', 'Adresse email invalide');
                 return;
             }
 
@@ -553,25 +647,35 @@
                     phone: document.getElementById('defaultPhone').value
                 };
 
+                console.log('Envoi avec paramètres:', templateParams);
+                
                 // Envoyer l'email via EmailJS
                 const response = await emailjs.send(config.serviceId, config.templateId, templateParams);
                 
-                showAlert('success', `✅ Email envoyé à ${toEmail} avec succès!`);
-                
-                // Sauvegarder dans l'historique
-                saveToHistory({
-                    to: toEmail,
-                    name: recipientName,
-                    subject: subject,
-                    timestamp: new Date().toLocaleString()
-                });
-                
-                // Réinitialiser le formulaire
-                document.getElementById('toEmail').value = '';
-                document.getElementById('recipientName').value = '';
-                document.getElementById('subject').value = '';
-                document.getElementById('messageContent').value = '';
-                document.getElementById('additionalInfo').value = '';
+                // Vérifier que l'envoi a réussi
+                if (response && response.status === 200) {
+                    showAlert('success', `✅ Email envoyé à ${toEmail} avec succès!`);
+                    
+                    // Sauvegarder dans l'historique
+                    saveToHistory({
+                        to: toEmail,
+                        name: recipientName,
+                        subject: subject,
+                        timestamp: new Date().toLocaleString('fr-FR')
+                    });
+                    
+                    // Réinitialiser le formulaire
+                    document.getElementById('toEmail').value = '';
+                    document.getElementById('recipientName').value = '';
+                    document.getElementById('subject').value = '';
+                    document.getElementById('messageContent').value = '';
+                    document.getElementById('additionalInfo').value = '';
+                    
+                    // Recharger l'historique
+                    loadHistory();
+                } else {
+                    throw new Error('Réponse inattendue du service');
+                }
                 
             } catch (error) {
                 console.error('Erreur détaillée:', error);
@@ -587,7 +691,11 @@
             }
         }
 
-        // GESTION DES ALERTES
+        // =============================================
+        // FONCTIONS D'AFFICHAGE ET GESTION
+        // =============================================
+
+        // Gestion des alertes
         function showAlert(type, message) {
             const alert = document.getElementById(type + 'Alert');
             alert.textContent = message;
@@ -597,7 +705,7 @@
             }, 5000);
         }
 
-        // APERÇU DE L'EMAIL
+        // Aperçu de l'email
         function updatePreview() {
             const preview = document.getElementById('emailPreview');
             const recipientName = document.getElementById('recipientName').value || '[Nom]';
@@ -627,7 +735,7 @@
             `;
         }
 
-        // HISTORIQUE
+        // Historique des emails
         function saveToHistory(email) {
             let history = JSON.parse(localStorage.getItem('emailHistory') || '[]');
             history.unshift(email);
@@ -639,25 +747,35 @@
             const historyDiv = document.getElementById('emailHistory');
             
             if (history.length === 0) {
-                historyDiv.innerHTML = 'Aucun email envoyé pour le moment.';
+                historyDiv.innerHTML = '<p style="text-align: center; color: #666;">Aucun email envoyé pour le moment.</p>';
                 return;
             }
             
             historyDiv.innerHTML = history.map(email => `
-                <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; margin-bottom: 10px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <strong>${email.to}</strong>
-                        <span style="color: #666; font-size: 0.9em;">${email.timestamp}</span>
+                <div class="history-item">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <div style="font-weight: bold; color: #173887;">${email.to}</div>
+                            <div style="color: #333; margin: 5px 0;">${email.name}</div>
+                            <div style="font-weight: 500;">${email.subject}</div>
+                        </div>
+                        <span style="color: #666; font-size: 0.9em; white-space: nowrap;">${email.timestamp}</span>
                     </div>
-                    <div style="color: #333; margin: 5px 0;">${email.name}</div>
-                    <div style="color: #173887; font-weight: 500;">${email.subject}</div>
                 </div>
             `).join('');
         }
 
-        // Charger la configuration au chargement de la page
+        // =============================================
+        // INITIALISATION AU CHARGEMENT
+        // =============================================
+
         window.addEventListener('load', function() {
             loadEmailJSConfig();
+            // Ajouter les écouteurs d'événements pour l'aperçu en temps réel
+            document.getElementById('recipientName').addEventListener('input', updatePreview);
+            document.getElementById('subject').addEventListener('input', updatePreview);
+            document.getElementById('messageContent').addEventListener('input', updatePreview);
+            document.getElementById('additionalInfo').addEventListener('input', updatePreview);
         });
     </script>
 </body>
