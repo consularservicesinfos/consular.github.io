@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consular Services - Envoi d'Emails</title>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
     <style>
+        /* VOTRE CSS EXISTANT - JE GARDE LE MÊME */
         :root {
             --primary-color: #173887;
             --secondary-color: #2a5298;
@@ -26,7 +28,6 @@
             padding: 20px;
         }
         
-        /* PAGE DE CONNEXION */
         .login-container {
             background: white;
             border-radius: 20px;
@@ -137,7 +138,6 @@
             display: none;
         }
 
-        /* APPLICATION PRINCIPALE */
         .app-container {
             display: none;
             background: white;
@@ -174,14 +174,6 @@
         .main-content {
             flex: 1;
             padding: 20px;
-        }
-        
-        .section-header {
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-            margin: 20px 0;
-            font-size: 1.2rem;
         }
         
         .form-row {
@@ -265,6 +257,14 @@
             border: 1px solid #dee2e6;
         }
         
+        .config-section {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            border: 1px solid #b3d9f5;
+        }
+        
         @media (max-width: 768px) {
             .login-container,
             .app-content {
@@ -283,7 +283,7 @@
     <!-- PAGE DE CONNEXION -->
     <div class="login-container" id="loginPage">
         <div class="logo-section">
-            <img src="Logo.png" alt="Logo Consular Services" class="logo" onerror="this.style.display='none'">
+            <div style="font-size: 80px; color: #173887; margin-bottom: 20px;">📧</div>
             <h1 class="title">Consular Services</h1>
             <p>Plateforme d'envoi d'emails</p>
         </div>
@@ -336,11 +336,37 @@
                 </div>
                 <div class="form-group">
                     <label>Email contact</label>
-                    <input type="text" id="defaultEmail" value="consular.services.infos@gmail.com">
+                    <input type="text" id="defaultEmail" value="contact@consulaire.fr">
                 </div>
                 <div class="form-group">
                     <label>Téléphone</label>
                     <input type="text" id="defaultPhone" value="+33 1 45 67 89 00">
+                </div>
+                
+                <div class="config-section">
+                    <h4>Configuration EmailJS</h4>
+                    <p style="font-size: 12px; color: #666; margin-bottom: 15px;">
+                        <strong>Instructions :</strong><br>
+                        1. Créez un compte sur emailjs.com<br>
+                        2. Ajoutez le service Gmail<br>
+                        3. Créez un template<br>
+                        4. Entrez vos IDs ci-dessous
+                    </p>
+                    <div class="form-group">
+                        <label>Service ID</label>
+                        <input type="text" id="serviceId" placeholder="service_xxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label>Template ID</label>
+                        <input type="text" id="templateId" placeholder="template_xxxxx">
+                    </div>
+                    <div class="form-group">
+                        <label>User ID (Public Key)</label>
+                        <input type="text" id="userId" placeholder="user_xxxxx">
+                    </div>
+                    <button class="btn btn-primary" onclick="initEmailJS()" style="width: 100%;">
+                        Sauvegarder la configuration
+                    </button>
                 </div>
             </div>
             
@@ -412,6 +438,44 @@
     </div>
 
     <script>
+        // Initialisation EmailJS
+        function initEmailJS() {
+            const serviceId = document.getElementById('serviceId').value;
+            const templateId = document.getElementById('templateId').value;
+            const userId = document.getElementById('userId').value;
+            
+            if (!serviceId || !templateId || !userId) {
+                showAlert('error', 'Veuillez remplir tous les champs EmailJS');
+                return;
+            }
+            
+            // Initialiser EmailJS
+            emailjs.init(userId);
+            
+            // Sauvegarder la configuration
+            localStorage.setItem('emailjs_config', JSON.stringify({
+                serviceId: serviceId,
+                templateId: templateId,
+                userId: userId
+            }));
+            
+            showAlert('success', 'Configuration EmailJS sauvegardée avec succès!');
+        }
+
+        // Charger la configuration au démarrage
+        function loadEmailJSConfig() {
+            const savedConfig = localStorage.getItem('emailjs_config');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                document.getElementById('serviceId').value = config.serviceId;
+                document.getElementById('templateId').value = config.templateId;
+                document.getElementById('userId').value = config.userId;
+                
+                // Réinitialiser EmailJS avec la config sauvegardée
+                emailjs.init(config.userId);
+            }
+        }
+
         // GESTION DE LA CONNEXION
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -421,6 +485,7 @@
             if (username === 'Admin' && password === 'Admin') {
                 document.getElementById('loginPage').style.display = 'none';
                 document.getElementById('appContainer').style.display = 'block';
+                loadEmailJSConfig();
             } else {
                 document.getElementById('errorMessage').style.display = 'block';
             }
@@ -452,35 +517,74 @@
             }
         }
 
-        // ENVOI D'EMAIL (SIMULATION)
-        function sendEmail() {
+        // ENVOI D'EMAIL AVEC EMAILJS
+        async function sendEmail() {
             const toEmail = document.getElementById('toEmail').value;
             const recipientName = document.getElementById('recipientName').value;
             const subject = document.getElementById('subject').value;
             const messageContent = document.getElementById('messageContent').value;
             
+            // Validation
             if (!toEmail || !recipientName || !subject || !messageContent) {
                 showAlert('error', 'Veuillez remplir tous les champs obligatoires');
                 return;
             }
-            
-            // SIMULATION d'envoi d'email
-            showAlert('success', `Email envoyé à ${toEmail} avec succès!`);
-            
-            // Sauvegarder dans l'historique
-            saveToHistory({
-                to: toEmail,
-                name: recipientName,
-                subject: subject,
-                timestamp: new Date().toLocaleString()
-            });
-            
-            // Réinitialiser le formulaire
-            document.getElementById('toEmail').value = '';
-            document.getElementById('recipientName').value = '';
-            document.getElementById('subject').value = '';
-            document.getElementById('messageContent').value = '';
-            document.getElementById('additionalInfo').value = '';
+
+            // Vérifier la configuration EmailJS
+            const savedConfig = localStorage.getItem('emailjs_config');
+            if (!savedConfig) {
+                showAlert('error', 'Veuillez d\'abord configurer EmailJS dans la sidebar');
+                return;
+            }
+
+            try {
+                showAlert('success', 'Envoi en cours...');
+                
+                const config = JSON.parse(savedConfig);
+                const templateParams = {
+                    to_email: toEmail,
+                    subject: subject,
+                    recipient_name: recipientName,
+                    message: messageContent,
+                    additional_info: document.getElementById('additionalInfo').value,
+                    company: document.getElementById('defaultCompany').value,
+                    sender: document.getElementById('defaultSender').value,
+                    contact_email: document.getElementById('defaultEmail').value,
+                    phone: document.getElementById('defaultPhone').value
+                };
+
+                // Envoyer l'email via EmailJS
+                const response = await emailjs.send(config.serviceId, config.templateId, templateParams);
+                
+                showAlert('success', `✅ Email envoyé à ${toEmail} avec succès!`);
+                
+                // Sauvegarder dans l'historique
+                saveToHistory({
+                    to: toEmail,
+                    name: recipientName,
+                    subject: subject,
+                    timestamp: new Date().toLocaleString()
+                });
+                
+                // Réinitialiser le formulaire
+                document.getElementById('toEmail').value = '';
+                document.getElementById('recipientName').value = '';
+                document.getElementById('subject').value = '';
+                document.getElementById('messageContent').value = '';
+                document.getElementById('additionalInfo').value = '';
+                
+            } catch (error) {
+                console.error('Erreur détaillée:', error);
+                let errorMessage = 'Erreur lors de l\'envoi';
+                
+                if (error.text) {
+                    errorMessage += ': ' + error.text;
+                } else if (error.message) {
+                    errorMessage += ': ' + error.message;
+                }
+                
+                showAlert('error', errorMessage);
+            }
         }
 
         // GESTION DES ALERTES
@@ -503,7 +607,7 @@
             preview.innerHTML = `
                 <div style="border: 1px solid #173887; border-radius: 8px; overflow: hidden;">
                     <div style="background: #173887; color: white; padding: 20px; text-align: center;">
-                        <h2>Services Consulaires France</h2>
+                        <h2>${document.getElementById('defaultCompany').value}</h2>
                         <p>${document.getElementById('subject').value || '[Objet]'}</p>
                     </div>
                     <div style="padding: 20px;">
@@ -551,18 +655,9 @@
             `).join('');
         }
 
-        // GESTION DU LOGO
+        // Charger la configuration au chargement de la page
         window.addEventListener('load', function() {
-            const logo = document.querySelector('.logo');
-            if (!logo.complete || logo.naturalHeight === 0) {
-                const logoSection = document.querySelector('.logo-section');
-                const emoji = document.createElement('div');
-                emoji.style.fontSize = '80px';
-                emoji.style.color = '#173887';
-                emoji.style.marginBottom = '20px';
-                emoji.textContent = '📧';
-                logoSection.insertBefore(emoji, logoSection.firstChild);
-            }
+            loadEmailJSConfig();
         });
     </script>
 </body>
