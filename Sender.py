@@ -118,7 +118,7 @@ def show_login_page():
 
     with col_form:
         st.markdown("""
-        <h3 class="login-title">Consular Services Informations</h3>
+        <h3 class="login-title">Consular Services</h3>
         <p style="text-align: center; font-weight: bold; color: #495057; margin-top: -10px; margin-bottom: 30px;">
             Plateforme d'envoi de mails
         </p>
@@ -552,3 +552,4 @@ def main_app():
 if __name__ == "__main__":
     if check_authentication():
         main_app()
+
