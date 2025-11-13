@@ -1,0 +1,200 @@
+/* style.css (CORRIGÉ ET UNIFIÉ) */
+:root {
+    /* Couleurs unifiées */
+    --primary-color: #1a43b0;      /* Nouveau Bleu Principal (#1a43b0) pour TOUS les boutons principaux */
+    --secondary-color: #666666;    /* Nouveau Gris (#666666) pour les boutons secondaires/Annuler */
+    --background-color: #aaaaaa;   /* Nouveau Fond/Gris de soutien (#aaaaaa) */
+    --light-color: #ffffff;        /* Blanc */
+    --danger-color: #dc3545;       /* Rouge (Conservé pour Danger/Erreur) */
+    --success-color: #28a745;      /* Vert (Conservé pour Succès) */
+    --warning-color: #ffc107;      /* Jaune (Conservé pour Avertissement) */
+    --login-primary: #1a43b0;      /* Assure que la connexion utilise la nouvelle couleur principale */
+}
+
+/* --- Styles de Texte et Conteneurs --- */
+
+.main-header {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 2rem;
+    font-weight: 700;
+}
+
+.section-header {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+
+/* --- Styles des Boutons --- */
+
+/* Style générique des boutons (s'applique à tous les boutons par défaut et Déconnexion) */
+.stButton > button {
+    background-color: var(--primary-color) !important;
+    color: var(--light-color) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Hover générique (utilise une teinte plus claire du principal #1a43b0) */
+.stButton > button:hover {
+    background-color: #2e62ce !important; 
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(26, 67, 176, 0.3) !important;
+}
+
+/* SUPPRESSION/NEUTRALISATION DU STYLE ROUGE POUR LA DÉCONNEXION (utilisera le style générique ci-dessus) */
+/* .logout-btn > button { background-color: var(--danger-color) !important; } */
+/* .logout-btn > button:hover { background-color: #c82333 !important; } */
+
+
+/* Style pour le bouton Se connecter (kind="primary") -> DOIT ÊTRE BLEU UNIFIÉ */
+.stButton > button[kind="primary"] {
+    background-color: var(--login-primary) !important; /* #1a43b0 */
+    color: white !important;
+    border: 1px solid var(--login-primary) !important;
+}
+
+.stButton > button[kind="primary"]:hover {
+    background-color: #2e62ce !important; /* Lighter shade of #1a43b0 for hover */
+    border: 1px solid #2e62ce !important;
+}
+
+/* Style pour le bouton Annuler (kind="secondary") -> DOIT ÊTRE GRIS UNIFIÉ */
+.stButton > button[kind="secondary"] {
+    background-color: white !important;
+    color: var(--secondary-color) !important; /* #666666 */
+    border: 1px solid var(--secondary-color) !important; /* #666666 */
+}
+
+.stButton > button[kind="secondary"]:hover {
+    background-color: #f8f9fa !important;
+    border: 1px solid var(--secondary-color) !important;
+}
+
+/* --- Styles des Messages et Inputs --- */
+
+.success-message {
+    background-color: #d4edda;
+    color: var(--success-color);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #c3e6cb;
+    margin: 10px 0;
+}
+
+.error-message {
+    background-color: #f8d7da;
+    color: var(--danger-color);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    margin: 10px 0;
+}
+
+.warning-message {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ffeaa7;
+    margin: 10px 0;
+}
+
+.stTextInput > div > div > input,
+.stTextArea > div > div > textarea {
+    border: 2px solid #e9ecef !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    font-size: 14px !important;
+}
+
+.stTextInput > div > div > input:focus,
+.stTextArea > div > div > textarea:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 0.2rem rgba(26, 67, 176, 0.25) !important;
+}
+
+/* --- Styles des Onglets --- */
+
+.stTabs [data-baseweb="tab-list"] {
+    gap: 8px;
+}
+
+.stTabs [data-baseweb="tab"] {
+    height: 50px;
+    white-space: pre-wrap;
+    background-color: #f8f9fa;
+    border-radius: 8px 8px 0px 0px;
+    gap: 8px;
+    padding: 12px 24px;
+    font-weight: 600;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* --- Styles de la Page de Connexion --- */
+
+.login-container {
+    background: var(--light-color);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.login-logo-section {
+    background: linear-gradient(135deg, var(--background-color) 0%, #e9ecef 100%);
+    padding: 50px 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.login-form-section {
+    padding: 50px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.login-title {
+    color: var(--login-primary) !important; 
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.login-subtitle {
+    color: var(--secondary-color); 
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.login-error {
+    background-color: #f8d7da;
+    color: var(--danger-color);
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #f5c6cb;
+    margin: 15px 0;
+    text-align: center;
+    font-weight: 500;
+}
