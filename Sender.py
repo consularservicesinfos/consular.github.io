@@ -114,7 +114,7 @@ def show_login_page():
     col_logo, col_form = st.columns([0.6, 1.2])
     
     with col_logo:
-        show_logo(st, 240)
+        show_logo(st, 280)
 
     with col_form:
         st.markdown("""
@@ -552,4 +552,5 @@ def main_app():
 if __name__ == "__main__":
     if check_authentication():
         main_app()
+
 
